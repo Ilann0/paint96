@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<div class="main-container">
+		<div class="float-menu-top">
+			<!-- JS Injected -->
+		</div>
+		<div class="float-menu-btm">
+			<a href="">
+				<span id="reset" class="link-item">
+					<i class="fal fa-trash-alt"></i>
+				</span>
+			</a>
+			<a href="">
+				<span id="undo" class="link-item">
+					<i class="fal fa-undo"></i>
+				</span>
+			</a>
+			<a href="">
+				<span id="brush" class="link-item">
+					<i id="brush" class="fal fa-brush"></i>
+				</span>
+			</a>
+			<a href="">
+				<span id="eraser" class="link-item">
+					<i class="fal fa-eraser"></i>
+				</span>
+			</a>
+		</div>
+		<div class="float-menu-btm-2">
+			<div class="brush-shapes">
+				<a href="">
+					<span id="round" class="link-item active">
+						<i id="round" class="fal fa-circle"></i>
+					</span>
+				</a>
+				<a href="">
+					<span id="square" class="link-item">
+						<i id="square" class="fal fa-square"></i>
+					</span>
+				</a>
+			</div>
+			<div class="brush-size">
+				<input type="number" min=1 step=5 value=16>
+			</div>
+		</div>
+		<div class="canvas-area-container">
+			<div class="canvas-container"></div>
+			<div class="h-slider">
+				<input id="h" type="range" min=0 max=100 step=1 value=100>
+			</div>
+			<div class="v-slider">
+				<input id="v" type="range" orient="vertical" min=0 max=100 step=1 value=100>
+			</div>
+		</div>
+	</div>
+	
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script src="./js/fontawesome.js"></script>
+	<script src="./js/main.js"></script>
+	<link rel="stylesheet" href="./styles/slider.css">
+	<link rel="stylesheet" href="./styles/main.css">
+</body>
+</html>
