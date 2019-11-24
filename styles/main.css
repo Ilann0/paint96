@@ -53,8 +53,6 @@ polyline {
 	grid-gap: 1em 1em;
 }
 
-
-
 .float-menu-top,
 .float-menu-btm,
 .float-menu-btm-2 {
@@ -62,7 +60,6 @@ polyline {
 	border-radius: 5px;
 	background-color: var(--midnight-blue);
 	box-shadow: 0px 0px 9px 5px rgba(0,0,0,0.20);
-
 }
 
 .float-menu-top {
@@ -132,7 +129,6 @@ polyline {
 	transition-duration: 0.4s;
 }
 
-
 .link-item.active,
 .link-item:hover {
 	background-color: #12301F;
@@ -140,12 +136,10 @@ polyline {
 }
 
 .float-menu-btm-2 {
-	
 	grid-row: 3;
 
 	display: none;
 	overflow: visible !important;
-
 }
 
 .float-menu-btm-2::before {
@@ -158,7 +152,6 @@ polyline {
 	border-left: 7.5px solid transparent;
 	border-right: 7.5px solid transparent;
 	border-bottom: 15px solid var(--midnight-blue);
-
 }
 
 .brush-shapes {
@@ -248,7 +241,6 @@ polyline {
 
 .v-slider > input {
 	-webkit-appearance: slider-vertical;
-	direction: rtl;
 
 	height: 100%;
 	width: 100%;

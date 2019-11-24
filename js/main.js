@@ -1,7 +1,7 @@
 $( document ).ready(function() {
-	$menuTop = $( '.float-menu-top' );
 
-	colorArray = [
+	// For symetry's sake keep it a multple of 2
+	let colorArray = [
 		'black',
 		'#00fafa',
 		'blue',
@@ -16,33 +16,35 @@ $( document ).ready(function() {
 		'#ef10ff',
 	];
 
-	let $body = $( 'body' );
-	let $canvasContainer = $( '.canvas-container' );
+	const $body = $( 'body' );
+	const $menuTop = $( '.float-menu-top' );
+	const $canvasContainer = $( '.canvas-container' );
+
+	// Add svg to document
+	let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	$canvasContainer.append(svg);
+
+	const $svg = $( 'svg' );
 
 	const canvasProperties = {
 		height: '100%',
 		width: '100%',
-	}
+	};
 
 	const polylineProperties = {
 		stroke: 10,
 		color: 'black',
 		strokeLinecap: 'round',
-	}
+	};
 
-	let prevX = 0;
-	let prevY = 0;
-
-	// Add svg to document
-	let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-	$canvasContainer.append(svg)
-
-	let $svg = $( 'svg' );
 	$svg.addClass('canvas');
 
 	const canvas = document.querySelector('.canvas');
 
-	function adjustMouse(event) {
+	let prevX = 0;
+	let prevY = 0;
+
+	function adjustMousePosition(event) {
 		let canvasBounds = canvas.getBoundingClientRect();
 
 		let x = event.pageX - canvasBounds.left - window.scrollX;
@@ -57,18 +59,8 @@ $( document ).ready(function() {
 		return [x, y];
 	}
 
-	// Start drawing
-	$svg.mousedown(function(e) {
-		e.preventDefault();
-		addLine(e);
-
-		$svg.on('mousemove', drawLine);
-
-		document.addEventListener('mouseleave', () => $svg.off('mousemove', drawLine))
-	});
-
-	function addLine(e) {
-		let posXY = adjustMouse(e);
+	function addLineToCanvas(e) {
+		let posXY = adjustMousePosition(e);
 		let posXorigin = posXY[0];
 		let posYorigin = posXY[1];
 
@@ -86,18 +78,29 @@ $( document ).ready(function() {
 
 	function drawLine(e) {
 
-		let posXY = adjustMouse(e);
+		let posXY = adjustMousePosition(e);
 		let posX = posXY[0];
 		let posY = posXY[1];
 
 		polyline.attributes[0].value += ` ${posX},${posY}`;
 	}
 
+	// Start drawing
+	$svg.mousedown(function(e) {
+		e.preventDefault();
+		addLineToCanvas(e);
+
+		$svg.on('mousemove', drawLine);
+
+		document.addEventListener('mouseleave', () => $svg.off('mousemove', drawLine));
+	});
+
 	// Stop drawing
 	$body.mouseup(() => {
 		$svg.off('mousemove', drawLine);
 	});
 
+//Component general functions
 	function changeBrushSize(newSize) {
 		polylineProperties.stroke = newSize;
 	}
@@ -106,34 +109,28 @@ $( document ).ready(function() {
 		polylineProperties.color = newColor;
 	}
 
-	function changeBrushShape(newShape) {
-
-	}
-
 	function changeCanvasSize() {
-		$svg.css(canvasProperties)
+		$svg.css(canvasProperties);
 	}
-
 
 	function undo() {
 		$( 'polyline' ).last().remove();
 	}
 
 	function reset() {
-		$svg.html('')
+		$svg.html('');
+	}
+	//Get value of color label to use it as stroke color
+	function getLabel(id){
+		return $( `#${id}` ).html();
 	}
 
-	$( '.canvas-area-container input' ).on('input', function(e) {
-		if (e.target.id === 'h') {
-			canvasProperties.width = $( this ).val() + "%";
-		} else {
-			canvasProperties.height = $( this ).val() + "%";
-		}
-		changeCanvasSize()
-	});
+	function changePreviewColor(id, newColor) {
+		$( `#${id}` ).css('background-color', newColor);
+	}
 
 
-	function createColors(arrayOfColors) {
+	function createColorPalette(arrayOfColors) {
 		let i = 0;
 		for (color of arrayOfColors) {
 
@@ -151,7 +148,7 @@ $( document ).ready(function() {
 				class: 'color-label',
 				id: `color-lab-${i}`,
 			}));
-			changePrevColor($( '.color-prev' )[i].id, colorArray[i])
+			changePreviewColor($( '.color-prev' )[i].id, colorArray[i])
 			
 			$( '.color-label' )[i].append(colorArray[i]);
 
@@ -161,30 +158,33 @@ $( document ).ready(function() {
 		$( '#color-lab-0' ).addClass('active');
 	}
 
+	createColorPalette(colorArray);
+	
 
-	function getLabel(id){
-		return $( `#${id}` ).html()
-	}
-
-	function changePrevColor(id, newColor) {
-		$( `#${id}` ).css('background-color', newColor);
-
-	}
-
-	createColors(colorArray);
+	// Event listener ==> range sliders (h, v) to resize canvas
+	$( '.canvas-area-container input' ).on('input', function(e) {
+		if (e.target.id === 'h') {
+			canvasProperties.width = $( this ).val() + "%";
+		} else {
+			canvasProperties.height = $( this ).val() + "%";
+		}
+		changeCanvasSize();
+	});
 
 	const $colorLabels = $( '.color-label' );
 	$colorLabels.each(function() {this.setAttribute('contenteditable', true)});
 	
-	// Event-listeners
+// Event-listeners
 
 	// Change colors based on input
 	$colorLabels.on('input', function(e) {
 		let color = getLabel(e.target.id);
-	 	changePrevColor(e.target.previousSibling.id, color);
+	 	changePreviewColor(e.target.previousSibling.id, color);
 	 	polylineProperties.color = color;
 	});
 
+	// Change color preview based on label
+	// Handles selected color and toggle eraser
 	const $colorPrev = $( '.color-prev' );
 	$colorPrev.on('click', function(e) {
 		polylineProperties.color = getLabel(e.target.nextSibling.id);
@@ -204,20 +204,24 @@ $( document ).ready(function() {
 		e.preventDefault();
 		undo();
 	});
+
+	//Toggles brush menu (handles invidiual items as well)
 	$( '#brush' ).click(function(e) {
 		e.preventDefault();
 		$( this ).toggleClass('active');
 		$( '.float-menu-btm-2' ).slideToggle();
 		$('.brush-shapes').slideToggle('medium', function() {
-	    if ($( this ).is(':visible'))
-	        $( this ).css({
-	        	display: 'flex',
-	        	justifyContent: 'space-around',
-	    });
-		});;
-		$('.brush-size').slideToggle();
-
+		    if ($( this ).is(':visible')) {
+		        $( this ).css({
+		        	display: 'flex',
+		        	justifyContent: 'space-around',
+		        });
+			}
+		});
+		$( '.brush-size' ).slideToggle();
 	});
+
+	// Toggle active shape (square or round)
 	$( '.brush-shapes .link-item' ).click(function(e) {
 		e.preventDefault()
 		$( '.brush-shapes .link-item' ).removeClass('active');
@@ -225,9 +229,12 @@ $( document ).ready(function() {
 
 		polylineProperties.strokeLinecap = e.target.id;
 	});
+
 	$( '.brush-size input' ).on('input', function() {
 		polylineProperties.stroke = $( this )[0].value;
 	});
+
+	// Sets eraser as active
 	$( '#eraser' ).click(function(e) {
 		e.preventDefault();
 		$( this ).addClass('active');
